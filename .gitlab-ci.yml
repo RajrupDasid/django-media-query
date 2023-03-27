@@ -4,4 +4,4 @@ requirementsdownload:
   image: python:3.11
   stage: testing
   script: 
-    - pip install requirements.text
+    - pip install -r requirements.text
