@@ -7,7 +7,7 @@ import string
 from django.utils.crypto import get_random_string
 import base64
 # Create your models here.
-
+from django.conf import settings
 
 def file_upload_location(instance, filename):
     file_description = instance.details.name.lower().replace(" ", "-")
@@ -16,6 +16,7 @@ def file_upload_location(instance, filename):
 
 
 class FileDetail(models.Model):
+    auth_user= models.ForeignKey(settings.AUTH_USER_MODEL, default=None,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, default=None)
     number_folder = models.CharField(max_length=255, default=None)
     created = models.DateTimeField(auto_now_add=True)
@@ -26,6 +27,7 @@ class FileDetail(models.Model):
 
 
 class FileUpload(models.Model):
+    auth_user= models.ForeignKey(settings.AUTH_USER_MODEL,default=None, on_delete=models.CASCADE)
     details = models.ForeignKey(FileDetail, default=None, on_delete=models.CASCADE)
     file = models.FileField(upload_to=file_upload_location, null=True, blank=True)
 
@@ -34,12 +36,14 @@ class FileUpload(models.Model):
 
 
 def photo_upload_location(instance, image_name):
+
     url = instance.details.name
     image_name = f'{uuid.uuid5(uuid.NAMESPACE_URL,url).hex}.jpg'
     return os.path.join('gallery_images', image_name)
 
 
 class PhotoDetails(models.Model):
+    auth_user= models.ForeignKey(settings.AUTH_USER_MODEL, default=None,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, default=None)
     description = models.TextField(default=None, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -54,6 +58,7 @@ class PhotoDetails(models.Model):
 
 
 class Photo(models.Model):
+    auth_user= models.ForeignKey(settings.AUTH_USER_MODEL, default=None,on_delete=models.CASCADE)
     details = models.ForeignKey(PhotoDetails, default=None, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to=photo_upload_location, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -87,6 +92,7 @@ def random_string_generator(size=30, chars=string.ascii_lowercase + string.digit
 
 
 class VideoFileDetails(models.Model):
+    auth_user= models.ForeignKey(settings.AUTH_USER_MODEL,default=None ,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, default=None)
     description = models.TextField(blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True)
@@ -101,6 +107,7 @@ class VideoFileDetails(models.Model):
 
 
 class VideoUpload(models.Model):
+    auth_user= models.ForeignKey(settings.AUTH_USER_MODEL, default=None ,on_delete=models.CASCADE)
     details = models.ForeignKey(VideoFileDetails, default=None, on_delete=models.CASCADE)
     video_thumbnail = models.ImageField(upload_to=video_thumbnail_upload_location, null=True, blank=True, default=None)
     slug = models.SlugField(max_length=1000, unique=True, blank=True)
